@@ -10,7 +10,23 @@
 			AND delete_flg = #{deleteFlg} 
 		ORDER BY training_date ASC
 	</select>
-
+	
+	<!-- Task25 入力件数カウント -->
+	<select id="findCountNull" resultType="jp.co.sss.lms.entity.TStudentAttendance">
+		SELECT COUNT (*) 
+		FROM t_student_attendance
+		WHERE training_start_time = #{trainingStartTime}
+		AND training_end_time = #{trainingEndTime}
+		IS NULL
+	</select>
+	
+	<!-- Task25 削除フラグ -->
+	<select id="selectById" resultType="jp.co.sss.lms.entity.TStudentAttendance">
+		SELECT COUNT (*) 
+		FROM t_student_attendance
+		WHERE lms_user_id = #{lmsUserId}
+	</select>
+	
 	<select id="findByLmsUserIdAndTrainingDate" resultType="jp.co.sss.lms.entity.TStudentAttendance">
 		SELECT * 
 		FROM t_student_attendance
