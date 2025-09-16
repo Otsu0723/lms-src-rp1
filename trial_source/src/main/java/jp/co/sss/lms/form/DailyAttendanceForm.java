@@ -24,6 +24,14 @@ public class DailyAttendanceForm {
 	private Integer blankTime;
 	/** 中抜け時間（画面表示用） */
 	private String blankTimeValue;
+	/** 時間マップ（プルダウン） */
+	private Integer trainingTimeHours;
+	/** 時間マップ（表示用） */
+	private String trainingTimeHoursValue;
+	/** 分マップ（プルダウン） */
+	private Integer trainingTimeMinutes;
+	/** 分マップ（表示用） */
+	private String trainingTimeMinutesValue;
 	/** ステータス */
 	private String status;
 	/** 備考 */

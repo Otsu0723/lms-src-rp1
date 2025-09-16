@@ -3,6 +3,7 @@ package jp.co.sss.lms.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,7 @@ import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.service.StudentAttendanceService;
+import jp.co.sss.lms.util.AttendanceUtil;
 import jp.co.sss.lms.util.Constants;
 
 /**
@@ -142,20 +144,35 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
+	 * Task26
 	 * 
 	 * @param model
 	 * @return 勤怠情報直接変更画面
 	 */
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
-
+		
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		
+		LinkedHashMap<Integer, String> hour = AttendanceUtil.getTrainingTimeHours();
+		LinkedHashMap<Integer, String> min = AttendanceUtil.getTrainingTimeMinutes();
+		
 		// 勤怠フォームの生成
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
+		
+		attendanceForm.setTrainingTimeHours(hour);
+		attendanceForm.setTrainingTimeMinutes(min);
+		
 		model.addAttribute("attendanceForm", attendanceForm);
+		// 選択肢を追加
+		model.addAttribute("trainingTimeHours", hour);
+		model.addAttribute("trainingTimeMinutes", min);
+//		// 日次の勤怠フォームの作成？
+//		DailyAttendanceForm dailyAttendanceForm = studentAttendanceService
+//				.setDailyAttendanceForm();
 
 		return "attendance/update";
 	}
