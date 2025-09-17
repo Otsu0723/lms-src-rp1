@@ -233,7 +233,7 @@ public class TrainingTime implements Comparable<TrainingTime>, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return this.getFormattedString();
+		return this.getFormattedString(hour, minute);
 	}
 
 	/**
@@ -302,10 +302,12 @@ public class TrainingTime implements Comparable<TrainingTime>, Serializable {
 
 	/**
 	 * 時刻をHH:mm形式で返却
+	 * @param minute 
+	 * @param hour 
 	 * 
 	 * @return HH:mm
 	 */
-	public String getFormattedString() {
+	public String getFormattedString(Integer hour, Integer minute) {
 		if (hour == null || minute == null) {
 			return "";
 		} else {

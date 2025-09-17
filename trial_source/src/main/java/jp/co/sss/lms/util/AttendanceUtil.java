@@ -86,7 +86,15 @@ public class AttendanceUtil {
 		return total;
 	}
 	
+	public TrainingTime calcTrainingStartTime(String trainingStartTime) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 	
+	public TrainingTime calcTrainingEndTime(String trainingEndTime) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 
 	/**
 	 * 時刻分を丸めた本日日付を取得
@@ -150,30 +158,58 @@ public class AttendanceUtil {
 	}
 	
 	/**
-	 * 時間(0～23)を選択肢として提供するMap
+	 * 出勤時間・時間(0～23)を選択肢として提供するMap
 	 * 
 	 */
-	public static LinkedHashMap<Integer, String> getTrainingTimeHours(){
+	public LinkedHashMap<Integer, String> getTrainingTimeStartHours(){
 		
-		LinkedHashMap<Integer, String> hour = new LinkedHashMap<>();
+		LinkedHashMap<Integer, String> startHour = new LinkedHashMap<>();
 		
 		for(int i = 0; i < 24; i++) {
-			hour.put(i, String.format("%02d", i));
+			startHour.put(i, String.format("%02d", i));
 		}
-		return hour;
+		return startHour;
 	}
 	
 	/**
-	 * 分数(0～59)を選択肢として提供するMap
+	 * 出勤・分数(0～59)を選択肢として提供するMap
 	 * 
 	 */
-	public static LinkedHashMap<Integer, String> getTrainingTimeMinutes(){
+	public LinkedHashMap<Integer, String> getTrainingTimeStartMinutes(){
 		
-		LinkedHashMap<Integer, String> min = new LinkedHashMap<>();
+		LinkedHashMap<Integer, String> startMin = new LinkedHashMap<>();
 		
 		for(int i = 0; i < 60; i++) {
-			min.put(i, String.format("%02d", i));
+			startMin.put(i, String.format("%02d", i));
 		}
-		return min;
+		return startMin;
+	}
+	
+	/**
+	 * 退勤時間・時間(0～23)を選択肢として提供するMap
+	 * 
+	 */
+	public LinkedHashMap<Integer,String> getTrainingTimeEndHours(){
+		
+		LinkedHashMap<Integer, String> endHour = new LinkedHashMap<>();
+		
+		for(int i = 0; i < 24; i++) {
+			endHour.put(i, String.format("%02d", i));
+		}
+		return endHour;
+	}
+	
+	/**
+	 * 退勤・分数(0～59)を選択肢として提供するMap
+	 * 
+	 */
+	public LinkedHashMap<Integer, String> getTrainingTimeEndMinutes(){
+		
+		LinkedHashMap<Integer, String> endMin = new LinkedHashMap<>();
+		
+		for(int i = 0; i < 60; i++) {
+			endMin.put(i, String.format("%02d", i));
+		}
+		return endMin;
 	}
 }
