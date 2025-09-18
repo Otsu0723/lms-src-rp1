@@ -233,7 +233,11 @@ public class TrainingTime implements Comparable<TrainingTime>, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return this.getFormattedString(hour, minute);
+		if (hour == null || minute == null) {
+			return "";
+		} else {
+			return this.getFormattedString(hour, minute);
+		}
 	}
 
 	/**

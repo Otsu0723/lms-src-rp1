@@ -161,7 +161,7 @@ public class AttendanceUtil {
 	 * 出勤時間・時間(0～23)を選択肢として提供するMap
 	 * 
 	 */
-	public LinkedHashMap<Integer, String> getTrainingTimeStartHours(){
+	public LinkedHashMap<Integer, String> getTrainingStartTimeHour(){
 		
 		LinkedHashMap<Integer, String> startHour = new LinkedHashMap<>();
 		
@@ -175,7 +175,7 @@ public class AttendanceUtil {
 	 * 出勤・分数(0～59)を選択肢として提供するMap
 	 * 
 	 */
-	public LinkedHashMap<Integer, String> getTrainingTimeStartMinutes(){
+	public LinkedHashMap<Integer, String> getTrainingStartTimeMinute(){
 		
 		LinkedHashMap<Integer, String> startMin = new LinkedHashMap<>();
 		
@@ -189,7 +189,7 @@ public class AttendanceUtil {
 	 * 退勤時間・時間(0～23)を選択肢として提供するMap
 	 * 
 	 */
-	public LinkedHashMap<Integer,String> getTrainingTimeEndHours(){
+	public LinkedHashMap<Integer,String> getTrainingEndTimeHour(){
 		
 		LinkedHashMap<Integer, String> endHour = new LinkedHashMap<>();
 		
@@ -203,7 +203,7 @@ public class AttendanceUtil {
 	 * 退勤・分数(0～59)を選択肢として提供するMap
 	 * 
 	 */
-	public LinkedHashMap<Integer, String> getTrainingTimeEndMinutes(){
+	public LinkedHashMap<Integer, String> getTrainingEndTimeMinute(){
 		
 		LinkedHashMap<Integer, String> endMin = new LinkedHashMap<>();
 		

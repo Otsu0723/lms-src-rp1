@@ -176,8 +176,17 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result,
 			Integer courseId,Integer lmsUserId) throws ParseException {
-		//Task27 ダイアログ表示(更新エラーチェック)
+//		// 勤怠一覧の取得
+//		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+//				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+//		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+
+		//LMSユーザID・削除フラグ・現在日付を取得
+		TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
+		
+//		//Task27 更新前チェック
 //		String check = studentAttendanceService.registCheck();
+//		model.addAttribute("check", check);
 
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm, courseId, lmsUserId);
@@ -185,6 +194,7 @@ public class AttendanceController {
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+		
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		return "attendance/detail";

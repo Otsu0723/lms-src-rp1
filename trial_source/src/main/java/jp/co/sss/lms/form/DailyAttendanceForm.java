@@ -25,25 +25,21 @@ public class DailyAttendanceForm {
 	/** 中抜け時間（画面表示用） */
 	private String blankTimeValue;
 	/** 出勤・時間マップ（プルダウン） */
-//	private LinkedHashMap<Integer, String> trainingTimeStartHours;
-	private Integer trainingTimeStartHours;
+	private Integer trainingStartTimeHour;
 	/** 出勤・時間マップ（表示用） */
-	private String trainingTimeStartHoursValue;
+	private String trainingStartTimeHourValue;
 	/** 退勤・時間マップ（プルダウン） */
-//	private LinkedHashMap<Integer, String> trainingTimeEndHours;
-	private Integer trainingTimeEndHours;
+	private Integer trainingEndTimeHour;
 	//** 退勤・時間マップ（表示用） */
-	private String trainingTimeEndHoursValue;	
+	private String trainingEndTimeHourValue;	
 	/** 出勤・分マップ（プルダウン） */
-//	private LinkedHashMap<Integer, String> trainingTimeStartMinutes;
-	private Integer trainingTimeStartMinutes;
+	private Integer trainingStartTimeMinute;
 	/** 出勤・分マップ（表示用） */
-	private String trainingTimeStartMinutesValue;
+	private String trainingStartTimeMinuteValue;
 	/** 退勤・分マップ（プルダウン） */
-//	private LinkedHashMap<Integer, String> trainingTimeEndMinutes;
-	private Integer trainingTimeEndMinutes;
+	private Integer trainingEndTimeMinute;
 	/** 退勤・分マップ（表示用） */
-	private String trainingTimeEndMinutesValue;
+	private String trainingEndTimeMinuteValue;
 	/** ステータス */
 	private String status;
 	/** 備考 */

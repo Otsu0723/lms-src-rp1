@@ -81,6 +81,6 @@ public interface TStudentAttendanceMapper {
 	 * @param tStudentAttendance
 	 * @return 更新結果
 	 */
-	Boolean update(TStudentAttendance tStudentAttendance);
+	Integer update(TStudentAttendance tStudentAttendance);
 
 }
