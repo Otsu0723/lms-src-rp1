@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -123,46 +124,92 @@ public class StudentAttendanceService {
 		}
 		return null;
 	}
-	
-//	/**
-//	 * 直接編集画面更新前チェック
-//	 * 
-//	 */
-//	public String registCheck(Short attendanceType) {
-//		Date trainingDate = attendanceUtil.getTrainingDate();
-//		// 権限チェック
-//		if (!loginUserUtil.isStudent()) {
-//			return messageUtil.getMessage(Constants.VALID_KEY_AUTHORIZATION);
-//		}
-//		// 研修日チェック
-//		if (!attendanceUtil.isWorkDay(loginUserDto.getCourseId(), trainingDate)) {
-//			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_NOTWORKDAY);
-//		}
-//		// 登録情報チェック
-//		TStudentAttendance tStudentAttendance = tStudentAttendanceMapper
-//				.findByLmsUserIdAndTrainingDate(loginUserDto.getLmsUserId(), trainingDate,
-//						Constants.DB_FLG_FALSE);
-//		
-//		if (tStudentAttendance == null
-//				|| tStudentAttendance.getTrainingStartTime().equals("")) {
-//			// 出勤情報がないため退勤情報を入力出来ません。
-//			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY);
-//		}
-//		if (!tStudentAttendance.getTrainingEndTime().equals("")) {
-//			// 本日の勤怠情報は既に入力されています。直接編集してください。
-//			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHALREADYEXISTS);
-//		}
-//		TrainingTime trainingStartTime = new TrainingTime(
-//				tStudentAttendance.getTrainingStartTime());
-//		TrainingTime trainingEndTime = new TrainingTime();
-//		if (trainingStartTime.compareTo(trainingEndTime) > 0) {
-//			// 退勤時刻は出勤時刻より後でなければいけません。
-//			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE);
-//		}
-//		break;
-//	} return null;
-//
-//}
+
+	/**
+	* 
+	* Task27
+	* 直接編集画面更新前チェック
+	* 
+	* @param validKeyInputInvalid
+	* @return
+	*/
+	@SuppressWarnings("unused")
+	public String registCheck(String validKeyInputInvalid, 
+			AttendanceForm attendanceForm, BindingResult result) {
+//		// 当日日付
+//		Date date = new Date();
+		Date trainingDate = attendanceUtil.getTrainingDate();
+		// 権限チェック
+		if (!loginUserUtil.isStudent()) {
+			return messageUtil.getMessage(Constants.VALID_KEY_AUTHORIZATION);
+		}
+		// 研修日チェック
+		if (!attendanceUtil.isWorkDay(loginUserDto.getCourseId(), trainingDate)) {
+			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_NOTWORKDAY);
+		}
+		// 登録情報チェック
+		TStudentAttendance tStudentAttendance = tStudentAttendanceMapper
+				.findByLmsUserIdAndTrainingDate(loginUserDto.getLmsUserId(), trainingDate,
+						Constants.DB_FLG_FALSE);
+		// 勤怠管理リストの取得
+		List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
+				.getAttendanceManagement(null, null, Constants.DB_FLG_FALSE);
+		
+		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+
+			// Task27 入力チェック
+			//備考の文字数が100以上の場合
+			if (tStudentAttendance.getNote().length() > 100) {
+				return messageUtil.getMessage(Constants.VALID_KEY_MAXLENGTH);
+			}
+
+			//出勤時間・分のどちらかが未入力の場合
+			if (attendanceUtil.getTrainingStartTimeHour().equals("")
+					|| attendanceUtil.getTrainingStartTimeMinute().equals("")) {
+				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID);
+			}
+
+			//退勤時間・分のどちらかが未入力の場合
+			if (attendanceUtil.getTrainingEndTimeHour().equals("")
+					|| attendanceUtil.getTrainingEndTimeMinute().equals("")) {
+				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID);
+			}
+			
+			TrainingTime trainingStartTime = new TrainingTime(
+					tStudentAttendance.getTrainingStartTime());
+			TrainingTime trainingEndTime = new TrainingTime(
+					tStudentAttendance.getTrainingEndTime());
+			// 遅刻早退ステータス
+			AttendanceStatusEnum attendanceStatusEnum = 
+					attendanceUtil.getStatus(trainingStartTime,trainingEndTime);
+			
+			// 時・分の分割をHH:mm形式に整形
+			// 出勤時刻整形
+//			TrainingTime trainingStartTime = new TrainingTime();
+			trainingStartTime.setHour(dailyAttendanceForm.getTrainingStartTimeHour());
+			trainingStartTime.setMinute(dailyAttendanceForm.getTrainingStartTimeMinute());
+			tStudentAttendance.setTrainingStartTime(trainingStartTime.toString());
+			// 退勤時刻整形
+//			TrainingTime trainingEndTime = new TrainingTime();
+			trainingEndTime.setHour(dailyAttendanceForm.getTrainingEndTimeHour());
+			trainingEndTime.setMinute(dailyAttendanceForm.getTrainingEndTimeMinute());
+			tStudentAttendance.setTrainingEndTime(trainingEndTime.toString());
+			
+			//出勤時間記入なし・退勤時間記入あり
+			if (tStudentAttendance.getTrainingStartTime().equals("") &&
+					!tStudentAttendance.getTrainingEndTime().equals("")) {
+				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID);
+			}
+			
+			// 出勤時間より退勤時間が前に入力された場合
+			if (trainingStartTime.compareTo(trainingEndTime) > 0) {
+				// 退勤時刻は出勤時刻より後でなければいけません。
+				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE);
+			}
+			
+		}
+		return null;
+	}
 
 	/**
 	 * 出勤ボタン処理
@@ -260,7 +307,7 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
-		
+
 		//Task26
 		//勤怠Utilメソッド
 		attendanceForm.setTrainingStartTimeHour(attendanceUtil.getTrainingStartTimeHour());
@@ -283,11 +330,11 @@ public class StudentAttendanceService {
 					.setStudentAttendanceId(attendanceManagementDto.getStudentAttendanceId());
 			dailyAttendanceForm
 					.setTrainingDate(dateUtil.toString(attendanceManagementDto.getTrainingDate()));
-			
+
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
-			
+
 			//Task26 Ⅱ
 			//出勤時間を時間と分に分割
 			if (attendanceManagementDto.getTrainingStartTime() != null
@@ -298,24 +345,23 @@ public class StudentAttendanceService {
 
 				dailyAttendanceForm.setTrainingStartTimeMinute(Integer.parseInt(parts[1]));
 			}
-			
+
 			//退勤時間を時間と分に分割
 			if (attendanceManagementDto.getTrainingEndTime() != null
 					&& attendanceManagementDto.getTrainingEndTime().contains(":")) {
-				
+
 				String[] parts = dailyAttendanceForm.getTrainingEndTime().split(":");
 				dailyAttendanceForm.setTrainingEndTimeHour(Integer.parseInt(parts[0]));
 
 				dailyAttendanceForm.setTrainingEndTimeMinute(Integer.parseInt(parts[1]));
 			}
-			
+
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
 						attendanceUtil.calcBlankTime(attendanceManagementDto.getBlankTime())));
 			}
-			
-			dailyAttendanceForm.setStatus(String.valueOf(attendanceManagementDto.getStatus()));
+			dailyAttendanceForm.setStatusDispName(String.valueOf(attendanceManagementDto.getStatus()));
 			dailyAttendanceForm.setNote(attendanceManagementDto.getNote());
 			dailyAttendanceForm.setSectionName(attendanceManagementDto.getSectionName());
 			dailyAttendanceForm.setIsToday(attendanceManagementDto.getIsToday());
@@ -337,15 +383,15 @@ public class StudentAttendanceService {
 	 * @throws ParseException
 	 */
 	@Transactional
-	public String update(AttendanceForm attendanceForm,Integer courseId,Integer lmsUserId) 
+	public String complete(AttendanceForm attendanceForm, Integer courseId, Integer lmsUserId)
 			throws ParseException {
 		// 当日日付
 		Date date = new Date();
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
-			.getAttendanceManagement(courseId, lmsUserId, Constants.DB_FLG_FALSE);
-		
+				.getAttendanceManagement(courseId, lmsUserId, Constants.DB_FLG_FALSE);
+
 		//権限判定？
 		lmsUserId = loginUserUtil.isStudent() ? loginUserDto.getLmsUserId()
 				: attendanceForm.getLmsUserId();
@@ -353,9 +399,9 @@ public class StudentAttendanceService {
 		// 現在の勤怠情報（受講生入力）リストを取得
 		List<TStudentAttendance> tStudentAttendanceList = tStudentAttendanceMapper
 				.findByLmsUserId(lmsUserId, Constants.DB_FLG_FALSE);
-		
+
 		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
-			
+
 			// 更新用エンティティ作成
 			TStudentAttendance tStudentAttendance = new TStudentAttendance();
 			// 日次勤怠フォームから更新用のエンティティにコピー
@@ -363,7 +409,7 @@ public class StudentAttendanceService {
 			// 研修日付
 			tStudentAttendance
 					.setTrainingDate(dateUtil.parse(dailyAttendanceForm.getTrainingDate()));
-			
+
 			// 時・分の分割をHH:mm形式に整形
 			// 出勤時刻整形
 			TrainingTime trainingStartTime = new TrainingTime();
@@ -375,10 +421,11 @@ public class StudentAttendanceService {
 			trainingEndTime.setHour(dailyAttendanceForm.getTrainingEndTimeHour());
 			trainingEndTime.setMinute(dailyAttendanceForm.getTrainingEndTimeMinute());
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.toString());
-			
+
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
 			
+//			tStudentAttendance.setStatus(String.valueOf(dailyAttendanceForm.getStatusDispName()));
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
 			// 備考
@@ -390,65 +437,10 @@ public class StudentAttendanceService {
 			tStudentAttendance.setDeleteFlg(Constants.DB_FLG_FALSE);
 			// 登録用Listへ追加
 			tStudentAttendanceList.add(tStudentAttendance);
-			
 			// 勤怠情報更新(tStudentAttendance.update)
 			tStudentAttendanceMapper.update(tStudentAttendance);
 		}
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
-
-//	public String registCheck() {
-//		// TODO 自動生成されたメソッド・スタブ
-//		return null;
-//	}
-	/**
-	 * 出退勤更新前のチェック
-	 * 
-	 * @param attendanceType
-	 * @return エラーメッセージ
-	 */
-//	public String punchCheck(Short attendanceType) {
-//		Date trainingDate = attendanceUtil.getTrainingDate();
-//		// 権限チェック
-//		if (!loginUserUtil.isStudent()) {
-//			return messageUtil.getMessage(Constants.VALID_KEY_AUTHORIZATION);
-//		}
-//		// 研修日チェック
-//		if (!attendanceUtil.isWorkDay(loginUserDto.getCourseId(), trainingDate)) {
-//			return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_NOTWORKDAY);
-//		}
-//		// 登録情報チェック
-//		TStudentAttendance tStudentAttendance = tStudentAttendanceMapper
-//				.findByLmsUserIdAndTrainingDate(loginUserDto.getLmsUserId(), trainingDate,
-//						Constants.DB_FLG_FALSE);
-//		switch (attendanceType) {
-//		case Constants.CODE_VAL_ATWORK:
-//			if (tStudentAttendance != null
-//					&& !tStudentAttendance.getTrainingStartTime().equals("")) {
-//				// 本日の勤怠情報は既に入力されています。直接編集してください。
-//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHALREADYEXISTS);
-//			}
-//			break;
-//		case Constants.CODE_VAL_LEAVING:
-//			if (tStudentAttendance == null
-//					|| tStudentAttendance.getTrainingStartTime().equals("")) {
-//				// 出勤情報がないため退勤情報を入力出来ません。
-//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY);
-//			}
-//			if (!tStudentAttendance.getTrainingEndTime().equals("")) {
-//				// 本日の勤怠情報は既に入力されています。直接編集してください。
-//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHALREADYEXISTS);
-//			}
-//			TrainingTime trainingStartTime = new TrainingTime(
-//					tStudentAttendance.getTrainingStartTime());
-//			TrainingTime trainingEndTime = new TrainingTime();
-//			if (trainingStartTime.compareTo(trainingEndTime) > 0) {
-//				// 退勤時刻は出勤時刻より後でなければいけません。
-//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE);
-//			}
-//			break;
-//		}
-//		return null;
-//	}
 }

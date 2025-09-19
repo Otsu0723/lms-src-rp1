@@ -51,7 +51,6 @@ public class AttendanceController {
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
 	public String indexCheck(Model model, String fmt, @Param("trainingStartTime") String trainingStartTime,
 			@Param("trainingEndTime") String trainingEndTime, @Param("lmsUserId") Integer lmsUserId) {
-		
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
@@ -61,34 +60,33 @@ public class AttendanceController {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/M/d");
 		//現在の日付を取得
 		Date now = new Date();
-		//日付を文字列に設定（要らないかも）
+		//日付を文字列に設定
 		sdf.format(now);
 
 		//API呼び出し(未入力件数取得)
 		Integer countNull = tStudentAttendanceMapper.findCountNull(trainingStartTime, trainingEndTime);
-		
+
 		//LMSユーザID・削除フラグ・現在日付を取得
 		TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
 		if (i != null) {
 			model.addAttribute("deleteFlg", i.getDeleteFlg());
 		}
-		
+
 		model.addAttribute("lmsUserId", loginUserDto.getLmsUserId());
 		model.addAttribute("now", now);
-		
+
 		if (countNull != null) {
-			
-//			//true：未入力確認ダイアログをJavaScriptで表示
+
+			//true：未入力確認ダイアログをJavaScriptで表示
 			model.addAttribute("notEnterFlg", true);
-			
-			//未入力がない場合(countNull == 0)
+
 		} else {
+			//未入力がない場合(countNull == 0)
 			model.addAttribute("notEnterFlg", false);
 		}
 
 		return "attendance/detail";
 	}
-
 
 	/**
 	 * 勤怠管理画面 『出勤』ボタン押下
@@ -149,16 +147,15 @@ public class AttendanceController {
 	 */
 	@RequestMapping(path = "/update")
 	public String update(Model model) {
-		
+
 		// ①？勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
+
 		// 勤怠フォームの生成
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
-		
 		model.addAttribute("attendanceForm", attendanceForm);
 
 		return "attendance/update";
@@ -175,26 +172,27 @@ public class AttendanceController {
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result,
-			Integer courseId,Integer lmsUserId) throws ParseException {
-//		// 勤怠一覧の取得
-//		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-//				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-//		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+			Integer courseId, Integer lmsUserId) throws ParseException {
 
-		//LMSユーザID・削除フラグ・現在日付を取得
-		TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
+		//Task27 更新前チェック
+		String check = studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result);
+		model.addAttribute("check", check);
+//		result.addError(check);
 		
-//		//Task27 更新前チェック
-//		String check = studentAttendanceService.registCheck();
-//		model.addAttribute("check", check);
-
-		// 更新
-		String message = studentAttendanceService.update(attendanceForm, courseId, lmsUserId);
-		model.addAttribute("message", message);
+			if (result.hasErrors()) {
+//				// 更新
+//				String complete = studentAttendanceService.complete(attendanceForm, courseId, lmsUserId);
+//				model.addAttribute("complete", complete);
+				
+				return "redirect:/attendance/update";
+			}
+			// 更新
+			String complete = studentAttendanceService.complete(attendanceForm, courseId, lmsUserId);
+			model.addAttribute("complete", complete);
+							
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-		
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		return "attendance/detail";

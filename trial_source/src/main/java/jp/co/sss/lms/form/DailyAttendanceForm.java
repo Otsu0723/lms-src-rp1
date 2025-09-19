@@ -41,7 +41,9 @@ public class DailyAttendanceForm {
 	/** 退勤・分マップ（表示用） */
 	private String trainingEndTimeMinuteValue;
 	/** ステータス */
-	private String status;
+	private Short status;
+	
+	private String statusName;
 	/** 備考 */
 	private String note;
 	/** セクション名 */

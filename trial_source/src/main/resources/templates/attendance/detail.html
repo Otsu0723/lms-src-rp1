@@ -21,9 +21,9 @@
 	<h2>勤怠管理</h2>
 
 	<!-- エラーメッセージ -->
-	<th:block th:if="${not #strings.isEmpty(error)}" id="error">
+	<th:block th:if="${error}" id="error">
 		<ul style="padding-left: 0; list-style: none;">
-			<li><span th:text="'*' + '&nbsp' + ${error}" class="help-inline error"></span></li>
+			<li><span th:text="${error}" class="help-inline error"></span></li>
 		</ul>
 	</th:block>
 

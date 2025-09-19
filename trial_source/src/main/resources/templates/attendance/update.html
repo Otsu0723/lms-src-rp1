@@ -17,11 +17,18 @@
 			<h2><small>途中退校日：${dispLeaveDate}</small></h2>
 		</th:block>
 	</th:block>
+	
+		<!-- 更新エラーメッセージ -->
+<!--	<th:block th:if="${#fields.hasErrors(check)}" id="check">-->
+<!--		<ul style="padding-left: 0; list-style: none;">-->
+<!--			<li><span th:error="*{check}" class="help-inline check"></span></li>-->
+<!--		</ul>-->
+<!--	</th:block>-->
 
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post">
+			<form th:action="@{/attendance/update}" method="post" onsubmit="return registCheck();">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
