@@ -73,12 +73,16 @@ public class StudentAttendanceService {
 			AttendanceStatusEnum statusEnum = AttendanceStatusEnum.getEnum(dto.getStatus());
 			if (statusEnum != null) {
 				dto.setStatusDispName(statusEnum.name);
-
-				//LMSユーザID・削除フラグ・現在日付を取得
-				TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
 			}
+			
+			//LMSユーザID・削除フラグ・現在日付を取得
+			TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
 		}
 		return attendanceManagementDtoList;
+	}
+	
+	public TStudentAttendance selectById(Integer lmsUserId) {
+		return tStudentAttendanceMapper.selectById(lmsUserId);
 	}
 	
 	/**

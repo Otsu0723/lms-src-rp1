@@ -66,13 +66,19 @@ public class AttendanceController {
 		//API呼び出し(未入力件数取得)
 		Integer countNull = studentAttendanceService.getCountNull();
 		
+		//LMSユーザID・削除フラグ・現在日付を取得
+		TStudentAttendance i = studentAttendanceService.selectById(lmsUserId);
+		if (i != null) {
+			model.addAttribute("deleteFlg", i.getDeleteFlg());
+		}
+		
 		model.addAttribute("lmsUserId", loginUserDto.getLmsUserId());
 		model.addAttribute("now", now);
 		
 		//未入力があった場合
 		if (countNull != null) {
 
-			//true：未入力確認ダイアログをJavaScriptで表示
+			//未入力確認ダイアログをJavaScriptで表示
 			model.addAttribute("notEnterFlg", true);
 
 		} else {
