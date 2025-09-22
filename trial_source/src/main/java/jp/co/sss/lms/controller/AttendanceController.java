@@ -85,7 +85,6 @@ public class AttendanceController {
 			//未入力がない場合(countNull == 0)
 			model.addAttribute("notEnterFlg", false);
 		}
-
 		return "attendance/detail";
 	}
 
@@ -146,7 +145,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 『勤怠情報を直接編集する』リンク押下
-	 * Task26
+	 * - Task26
 	 * 
 	 * @param model
 	 * @return 勤怠情報直接変更画面
@@ -156,15 +155,14 @@ public class AttendanceController {
 		
 		TStudentAttendance tStudentAttendance = new TStudentAttendance();
 
-		// ①？勤怠管理リストの取得
+		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId(),
 						model,tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		// 勤怠フォームの生成
-		AttendanceForm attendanceForm = studentAttendanceService
-				.setAttendanceForm(attendanceManagementDtoList);
+		AttendanceForm attendanceForm = studentAttendanceService.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
 
 		return "attendance/update";
@@ -172,6 +170,7 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠情報直接変更画面 『更新』ボタン押下
+	 * - Task27
 	 * 
 	 * @param attendanceForm
 	 * @param model
@@ -181,13 +180,13 @@ public class AttendanceController {
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(@Valid AttendanceForm attendanceForm, BindingResult result, Model model,
-			Integer courseId, Integer lmsUserId) throws ParseException {
+			Integer courseId, Integer lmsUserId, Short validKeyInputInvalid) throws ParseException {
 		
 		TStudentAttendance tStudentAttendance = new TStudentAttendance();
 
 		//Task27 更新前チェック
 //		String check = 
-				studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result);
+				studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result, lmsUserId, courseId, validKeyInputInvalid);
 //		model.addAttribute("check", check);
 //		result.addError(check);
 
@@ -195,13 +194,13 @@ public class AttendanceController {
 			// 更新
 			model.addAttribute("attendanceManagementDtoList", studentAttendanceService
 					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId(),
-							model,tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime()));
+					model, tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime()));
 			return "attendance/update";
 		}
 
 //		if (check == null) {
 			// 更新
-			String complete = studentAttendanceService.complete(attendanceForm, courseId, lmsUserId);
+			String complete = studentAttendanceService.update(attendanceForm, courseId, lmsUserId);
 			model.addAttribute("complete", complete);
 
 			// 一覧の再取得
@@ -209,15 +208,6 @@ public class AttendanceController {
 					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId(),
 							model,tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime());
 			model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		
-//		// 更新
-//		String complete = studentAttendanceService.complete(attendanceForm, courseId, lmsUserId);
-//		model.addAttribute("complete", complete);
-//
-//		// 一覧の再取得
-//		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-//				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-//		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		return "attendance/detail";
 	}
