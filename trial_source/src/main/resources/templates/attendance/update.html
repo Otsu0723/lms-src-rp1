@@ -19,11 +19,11 @@
 	</th:block>
 	
 		<!-- 更新エラーメッセージ -->
-<!--	<th:block th:if="${#fields.hasErrors(check)}" id="check">-->
-<!--		<ul style="padding-left: 0; list-style: none;">-->
-<!--			<li><span th:error="*{check}" class="help-inline check"></span></li>-->
-<!--		</ul>-->
-<!--	</th:block>-->
+	<th:block th:if="${check}" id="check">
+		<ul style="padding-left: 0; list-style: none;">
+			<li><span th:error="*{check}" class="help-inline check"></span></li>
+		</ul>
+	</th:block>
 
 	<div class="row">
 		<div class="bs-component col-sm-12">

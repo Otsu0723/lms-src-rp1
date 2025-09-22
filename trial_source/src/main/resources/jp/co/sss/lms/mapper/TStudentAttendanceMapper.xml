@@ -11,13 +11,12 @@
 		ORDER BY training_date ASC
 	</select>
 	
-	<!-- Task25 入力件数カウント -->
-	<select id="findCountNull" resultType="jp.co.sss.lms.entity.TStudentAttendance">
+	<!-- Task25 未入力件数カウント -->
+	<select id="findCountNull" resultType="int">
 		SELECT COUNT (*) 
 		FROM t_student_attendance
-		WHERE training_start_time = #{trainingStartTime}
-		AND training_end_time = #{trainingEndTime}
-		IS NULL
+		WHERE (training_start_time IS NULL 
+		OR training_end_time IS NULL)
 	</select>
 	
 	<!-- Task25 削除フラグ -->

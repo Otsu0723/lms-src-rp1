@@ -28,19 +28,17 @@ public interface TStudentAttendanceMapper {
 			@Param("deleteFlg") Short deleteFlg);
 	
 	/**
-	 * 勤怠情報（受講生入力）取得（入力件数）Task25
-	 *
-	 * @param trainingStartTime 出勤時間
-	 * @param trainingEndTime 退勤時間
+	 * 勤怠情報（受講生入力）取得（未入力件数）
+	 * 
+	 * @author otsuka - Task25
 	 * @return
 	 */
-	Integer findCountNull(@Param("trainingStartTime") String trainingStartTime, 
-			@Param("trainingEndTime") String trainingEndTime);
+	Integer findCountNull();
 	
 	/**
 	 * 削除フラグ
 	 * 
-	 * @param i
+	 * @param lmsUserId
 	 * @return
 	 */
 	TStudentAttendance selectById(@Param("lmsUserId")Integer lmsUserId);

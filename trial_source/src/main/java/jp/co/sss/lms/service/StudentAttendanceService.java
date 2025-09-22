@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
@@ -54,7 +56,9 @@ public class StudentAttendanceService {
 	 * @return 勤怠管理画面用DTOリスト
 	 */
 	public List<AttendanceManagementDto> getAttendanceManagement(Integer courseId,
-			Integer lmsUserId) {
+			@Param("lmsUserId") Integer lmsUserId, Model model, 
+			@Param("trainingStartTime") String trainingStartTime,
+			@Param("trainingEndTime") String trainingEndTime) {
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
@@ -69,10 +73,22 @@ public class StudentAttendanceService {
 			AttendanceStatusEnum statusEnum = AttendanceStatusEnum.getEnum(dto.getStatus());
 			if (statusEnum != null) {
 				dto.setStatusDispName(statusEnum.name);
+
+				//LMSユーザID・削除フラグ・現在日付を取得
+				TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
 			}
 		}
-
 		return attendanceManagementDtoList;
+	}
+	
+	/**
+	 * 未入力件数のチェック
+	 * @author otsuka - Task25
+	 * 
+	 * @return 出退勤未入力件数
+	 */
+	public Integer getCountNull() {
+		return tStudentAttendanceMapper.findCountNull();
 	}
 
 	/**
@@ -126,9 +142,8 @@ public class StudentAttendanceService {
 	}
 
 	/**
-	* 
-	* Task27
 	* 直接編集画面更新前チェック
+	* @author otsuka -Task.27
 	* 
 	* @param validKeyInputInvalid
 	* @return
@@ -151,12 +166,13 @@ public class StudentAttendanceService {
 		TStudentAttendance tStudentAttendance = tStudentAttendanceMapper
 				.findByLmsUserIdAndTrainingDate(loginUserDto.getLmsUserId(), trainingDate,
 						Constants.DB_FLG_FALSE);
-		// 勤怠管理リストの取得
-		List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
-				.getAttendanceManagement(null, null, Constants.DB_FLG_FALSE);
 		
 		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
-
+			
+			// 勤怠管理リストの取得
+			List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
+					.getAttendanceManagement(null, null, Constants.DB_FLG_FALSE);
+			
 			// Task27 入力チェック
 			//備考の文字数が100以上の場合
 			if (tStudentAttendance.getNote().length() > 100) {
@@ -207,6 +223,9 @@ public class StudentAttendanceService {
 				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE);
 			}
 			
+			if (result.hasErrors()) {
+				return "attendance/detail";
+			}
 		}
 		return null;
 	}

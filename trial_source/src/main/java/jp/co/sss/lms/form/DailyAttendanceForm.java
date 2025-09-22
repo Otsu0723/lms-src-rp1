@@ -1,5 +1,6 @@
 package jp.co.sss.lms.form;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -44,7 +45,8 @@ public class DailyAttendanceForm {
 	private Short status;
 	
 	private String statusName;
-	/** 備考 */
+	/** 備考(100字以内) */
+	@Size(max = 100)
 	private String note;
 	/** セクション名 */
 	private String sectionName;
