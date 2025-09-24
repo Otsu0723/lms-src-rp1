@@ -97,8 +97,27 @@ public class StudentAttendanceService {
 	 * 
 	 * @return 出退勤未入力件数
 	 */
-	public Integer getCountNull() {
-		return tStudentAttendanceMapper.findCountNull();
+	public Integer getNotEnterCount(@Param("lmsUserId") Integer lmsUserId,
+			@Param("trainingDate") Date trainingDate, 
+			@Param("trainingStartTime") String trainingStartTime,
+			@Param("trainingEndTime") String trainingEndTime, 
+			@Param("status") Short status,
+			@Param("deleteFlg") Short deleteFlg) {
+		return tStudentAttendanceMapper.findNotEnterCount(lmsUserId,
+				trainingDate, trainingStartTime, trainingEndTime, status, deleteFlg);
+	}
+
+	/**
+	 * @param attendanceForm
+	 * 
+	 * 勤怠Util（時間・分ごと）のプルダウンリストメソッド
+	 */
+	public void setTrainingTimePulldown(AttendanceForm attendanceForm) {
+		//勤怠Utilメソッド
+		attendanceForm.setTrainingStartTimeHour(attendanceUtil.getTrainingStartTimeHour());
+		attendanceForm.setTrainingStartTimeMinute(attendanceUtil.getTrainingStartTimeMinute());
+		attendanceForm.setTrainingEndTimeHour(attendanceUtil.getTrainingEndTimeHour());
+		attendanceForm.setTrainingEndTimeMinute(attendanceUtil.getTrainingEndTimeMinute());
 	}
 
 	/**
@@ -273,7 +292,7 @@ public class StudentAttendanceService {
 			dailyAttendanceForm.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
 
-			//Task26 Ⅱ
+			//Task26
 			//出勤時間を時間と分に分割
 			if (attendanceManagementDto.getTrainingStartTime() != null
 					&& attendanceManagementDto.getTrainingStartTime().contains(":")) {
@@ -323,6 +342,7 @@ public class StudentAttendanceService {
 	public String registCheck(String validKeyInputInvalid, AttendanceForm attendanceForm,
 			BindingResult result, @Param("courseId") Integer courseId,
 			@Param("lmsUserId") Integer lmsUserId, @Param("deleteFlg") Short deleteFlg) {
+
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		// 権限チェック
 		if (!loginUserUtil.isStudent()) {
@@ -351,15 +371,15 @@ public class StudentAttendanceService {
 			}
 
 			//出勤時間・分のどちらかが未入力の場合
-			if (attendanceUtil.getTrainingStartTimeHour().equals("")
-					|| attendanceUtil.getTrainingStartTimeMinute().equals("")) {
-				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID);
+			if (dailyAttendanceForm.getTrainingStartTimeHour() == null
+					|| dailyAttendanceForm.getTrainingStartTimeMinute() == null) {
+				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID, new String[] {"出勤時間"});
 			}
 
 			//退勤時間・分のどちらかが未入力の場合
-			if (attendanceUtil.getTrainingEndTimeHour().equals("")
-					|| attendanceUtil.getTrainingEndTimeMinute().equals("")) {
-				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID);
+			if (dailyAttendanceForm.getTrainingEndTimeHour() == null
+					|| dailyAttendanceForm.getTrainingEndTimeMinute() == null) {
+				return messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID, new String[] {"退勤時間"});
 			}
 
 //			TrainingTime trainingStartTime = new TrainingTime(
@@ -381,6 +401,7 @@ public class StudentAttendanceService {
 			trainingEndTime.setHour(dailyAttendanceForm.getTrainingEndTimeHour());
 			trainingEndTime.setMinute(dailyAttendanceForm.getTrainingEndTimeMinute());
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.toString());
+			System.out.println(trainingEndTime);
 
 			//出勤時間記入なし・退勤時間記入あり
 			if (dailyAttendanceForm.getTrainingStartTime().equals("") &&
@@ -461,7 +482,7 @@ public class StudentAttendanceService {
 			tStudentAttendance.setLmsUserId(lmsUserId);
 			tStudentAttendance.setAccountId(loginUserDto.getAccountId());
 
-//			tStudentAttendance.setStatus(String.valueOf(dailyAttendanceForm.getStatusDispName()));
+			//			tStudentAttendance.setStatus(dailyAttendanceForm.getStatusDispName());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
 			// 備考

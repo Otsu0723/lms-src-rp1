@@ -18,6 +18,13 @@ div.contract {
 	padding: 5px;
 }
 
+.check {
+	font-weight: bold;
+	color: #b94a48;
+	display: inline-block;
+	padding: 5px;
+}
+
 .errorInput {
 	background-color: #FFD2D2;
 	border-color: red;
