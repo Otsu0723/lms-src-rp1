@@ -21,14 +21,14 @@
 
 	<!-- 更新エラーメッセージ -->
 	<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
-		<th:block th:if="${#fields.hasGlobalErrors()}" id="check">
+		<th:block th:if="${#fields.hasErrors()}">
 		<ul style="padding-left: 0; list-style: none;">
-			<li th:each="errors, iterStat : ${#fields.globalErrors()}" th:field="*{attendanceList[0].trainingStartTime}">
+			<li th:each="errors : ${#fields.globalErrors()}">
+<!--			 th:each="errors : ${#fields.globalErrors()}">-->
+<!--			 th:field="*{attendanceList[0].trainingStartTime}">-->
 				<span th:text="${errors}" class="help-inline check">
-			</span></li>
-			<li th:each="errors, iterStat :${#fields.globalErrors()}" th:field="*{attendanceList[0].trainingEndTime}">
-				<span th:text="${errors}" class="help-inline check">
-			</span></li>
+			</span>
+			</li>
 		</ul>
 	</th:block>
 	</form>

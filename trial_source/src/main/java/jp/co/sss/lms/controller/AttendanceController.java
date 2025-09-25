@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -185,19 +184,18 @@ public class AttendanceController {
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(@Valid AttendanceForm attendanceForm, BindingResult result, Model model,
-			Integer courseId, Integer lmsUserId, Short validKeyInputInvalid) throws ParseException {
+			Integer courseId, Integer lmsUserId, Short validKeyInputInvalid, AttendanceManagementDto attendanceManagementDto) 
+					throws ParseException {
 		
 		TStudentAttendance tStudentAttendance = new TStudentAttendance();
 
 		//Task27 更新前チェック
-		String check = studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result, lmsUserId, courseId, validKeyInputInvalid);
+		studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result, lmsUserId, courseId, validKeyInputInvalid);
 
-		if (check != null) {
+		if (result.hasErrors()) {
 			
-			ObjectError error = new ObjectError("attendanceForm", check);
 			studentAttendanceService.setTrainingTimePulldown(attendanceForm);
 			model.addAttribute("attendanceForm", attendanceForm);
-			result.addError(error);
 			
 			// 一覧の再取得
 			List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -207,13 +205,10 @@ public class AttendanceController {
 			
 			return "attendance/update";
 		}
-
-		if (check == null) {
 			// 更新
-			String complete = studentAttendanceService.update(attendanceForm, courseId, lmsUserId);
+			String complete = studentAttendanceService.update(attendanceForm, courseId, lmsUserId, attendanceManagementDto);
 			model.addAttribute("complete", complete);
 			
-			// 更新
 			model.addAttribute("attendanceManagementDtoList", studentAttendanceService
 					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId(),
 							model, tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime()));
@@ -223,7 +218,7 @@ public class AttendanceController {
 					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId(),
 							model,tStudentAttendance.getTrainingStartTime(), tStudentAttendance.getTrainingEndTime());
 			model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
-		}
+		
 		return "attendance/detail";
 	}
 }
