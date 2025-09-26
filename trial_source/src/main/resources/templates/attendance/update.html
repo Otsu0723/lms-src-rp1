@@ -3,6 +3,17 @@
 
 <head>
 	<meta charset="UTF-8">
+<!--	<style>-->
+<!--		thead,-->
+<!--		tbody {-->
+<!--			display: block;-->
+<!--		}-->
+
+<!--		tbody {-->
+<!--			height: 100px;-->
+<!--			overflow-y: scroll;-->
+<!--		}-->
+<!--	</style>-->
 	<title>勤怠情報変更｜LMS</title>
 </head>
 
@@ -22,15 +33,13 @@
 	<!-- 更新エラーメッセージ -->
 	<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
 		<th:block th:if="${#fields.hasErrors()}">
-		<ul style="padding-left: 0; list-style: none;">
-			<li th:each="errors : ${#fields.globalErrors()}">
-<!--			 th:each="errors : ${#fields.globalErrors()}">-->
-<!--			 th:field="*{attendanceList[0].trainingStartTime}">-->
-				<span th:text="${errors}" class="help-inline check">
-			</span>
-			</li>
-		</ul>
-	</th:block>
+			<ul style="padding-left: 0; list-style: none;">
+				<li th:each="errors : ${#fields.globalErrors()}">
+					<span th:text="${errors}" class="help-inline check">
+					</span>
+				</li>
+			</ul>
+		</th:block>
 	</form>
 
 	<div class="row">
@@ -39,18 +48,18 @@
 			<form th:action="@{/attendance/update}" method="post" onsubmit="return registCheck()">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
-						<tr>
-							<th class="w140">日付</th>
-							<th class="w300">コース内容</th>
-							<th class="w80"></th>
-							<th class="w180" colspan="3">出勤</th>
-							<th class="w180" colspan="3">退勤</th>
+						<tr class="thead-table-data">
+							<th class="w200">日付</th>
+							<th class="w200">コース内容</th>
+							<th class="w60"></th>
+							<th class="w260" colspan="3">出勤</th>
+							<th class="w260" colspan="3">退勤</th>
 							<th class="w140">中抜け時間</th>
-							<th class="w100">ステータス</th>
-							<th class="w240">備考</th>
+							<th class="w120">ステータス</th>
+							<th class="w200">備考</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody  class="tbody-table-data">
 						<th:block th:each="dailyAttendanceForm, stat : *{attendanceForm.attendanceList}">
 							<tr>
 								<th:block>
@@ -69,13 +78,14 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
-								<td class="w60"><input type="button" class="btn btn-success default-button"	value="定時" /></td>
+								<td class="w60"><input type="button" class="btn btn-success default-button"
+										value="定時" /></td>
 								<td class="w90">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
 										class="form-control">
 										<option th:each="trainingStartTimeHour:${attendanceForm.trainingStartTimeHour}"
-											id="selectStartTimeHour"
-											th:value="${trainingStartTimeHour.key}" class="form-control" th:inlne="text"
+											id="selectStartTimeHour" th:value="${trainingStartTimeHour.key}"
+											class="form-control" th:inlne="text"
 											th:selected="${trainingStartTimeHour.key == dailyAttendanceForm.trainingStartTimeHour}">
 											[[${trainingStartTimeHour.value}]]</option>
 									</select>
@@ -86,9 +96,8 @@
 										class="form-control">
 										<option
 											th:each="trainingStartTimeMinute:${attendanceForm.trainingStartTimeMinute}"
-											id="selectStartTimeMinute"
-											th:value="${trainingStartTimeMinute.key}" class="form-control"
-											th:inlne="text"
+											id="selectStartTimeMinute" th:value="${trainingStartTimeMinute.key}"
+											class="form-control" th:inlne="text"
 											th:selected="${trainingStartTimeMinute.key == dailyAttendanceForm.trainingStartTimeMinute}">
 											[[${trainingStartTimeMinute.value}]]</option>
 									</select>
@@ -97,8 +106,8 @@
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeHour|"
 										class="form-control">
 										<option th:each="trainingEndTimeHour:${attendanceForm.trainingEndTimeHour}"
-											id="selectEndTimeHour"
-											th:value="${trainingEndTimeHour.key}" class="form-control" th:inlne="text"
+											id="selectEndTimeHour" th:value="${trainingEndTimeHour.key}"
+											class="form-control" th:inlne="text"
 											th:selected="${trainingEndTimeHour.key == dailyAttendanceForm.trainingEndTimeHour}">
 											[[${trainingEndTimeHour.value}]]</option>
 									</select>
@@ -108,8 +117,8 @@
 									<select th:name="|attendanceList[${stat.index}].trainingEndTimeMinute|"
 										class="form-control">
 										<option th:each="trainingEndTimeMinute:${attendanceForm.trainingEndTimeMinute}"
-											id="selectEndTimeMinute"
-											th:value="${trainingEndTimeMinute.key}" class="form-control" th:inlne="text"
+											id="selectEndTimeMinute" th:value="${trainingEndTimeMinute.key}"
+											class="form-control" th:inlne="text"
 											th:selected="${trainingEndTimeMinute.key == dailyAttendanceForm.trainingEndTimeMinute}">
 											[[${trainingEndTimeMinute.value}]]</option>
 									</select>
@@ -130,7 +139,7 @@
 							</tr>
 						</th:block>
 					</tbody>
-				</table>
+				</table></div>
 
 				<div class="form-group">
 					<th:block th:if="${session.loginUserDto.role == '0001'}">
@@ -171,32 +180,33 @@
 				return false;
 			}
 		}
-		
+
 		//定時ボタンを押したときに設定される値
-		const defaultHour = {定時 :['9','0','18','0']};
-		
-		function defaultHours(event){
+		const defaultHour = {定時: ['9', '0', '18', '0']};
+
+		function defaultHours(event) {
 			const [startHour, startMinute, endHour, endMinute] = defaultHour.定時;
-			
+
 			//クリックされたボタンの行を取得
 			const row = event.target.closest('tr');
-			
+
 			//selectタグにtraining●●で終わるname属性があるか検索
 			const selectStartHour = row.querySelector('select[name$=".trainingStartTimeHour"]');
 			const selectStartMinute = row.querySelector('select[name$=".trainingStartTimeMinute"]');
 			const selectEndHour = row.querySelector('select[name$=".trainingEndTimeHour"]');
 			const selectEndMinute = row.querySelector('select[name$=".trainingEndTimeMinute"]');
-			
-			if(selectStartHour && selectStartMinute && selectEndHour && selectEndMinute){
+
+			if (selectStartHour && selectStartMinute && selectEndHour && selectEndMinute) {
 				selectStartHour.value = startHour;
 				selectStartMinute.value = startMinute;
 				selectEndHour.value = endHour;
 				selectEndMinute.value = endMinute;
-				}
 			}
-			
-			document.querySelectorAll('.default-button').forEach(botton => {
-				botton.addEventListener('click',defaultHours);});
+		}
+
+		document.querySelectorAll('.default-button').forEach(botton => {
+			botton.addEventListener('click', defaultHours);
+		});
 	</script>
 
 </body>

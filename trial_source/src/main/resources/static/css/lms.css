@@ -117,6 +117,16 @@ div.tab-panel-div {
 	z-index: 1;
 }
 
+/*.thead-table-data{*/
+/*	display: block;*/
+/*}*/
+/*.tbody-table-data{*/
+.bs-component col-sm-12{
+	overflow-y: scroll;
+	/*height数値関係なし;*/
+	height: 100px;
+}
+
 /*------------------------------------------
    Sticky footer styles
 --------------------------------------------*/

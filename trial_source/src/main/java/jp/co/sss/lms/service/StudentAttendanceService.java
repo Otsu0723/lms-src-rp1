@@ -114,12 +114,13 @@ public class StudentAttendanceService {
 	 * 勤怠Util（時間・分ごと）のプルダウンリストメソッド
 	 */
 	public void setTrainingTimePulldown(AttendanceForm attendanceForm) {
-		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
 		//勤怠Utilメソッド
 		attendanceForm.setTrainingStartTimeHour(attendanceUtil.getTrainingStartTimeHour());
 		attendanceForm.setTrainingStartTimeMinute(attendanceUtil.getTrainingStartTimeMinute());
 		attendanceForm.setTrainingEndTimeHour(attendanceUtil.getTrainingEndTimeHour());
 		attendanceForm.setTrainingEndTimeMinute(attendanceUtil.getTrainingEndTimeMinute());
+		
+		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
 	}
 
 	/**
