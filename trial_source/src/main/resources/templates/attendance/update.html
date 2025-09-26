@@ -69,8 +69,7 @@
 								</th:block>
 								<td class="w140">[[${dailyAttendanceForm.dispTrainingDate}]]</td>
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
-								<td class="w60"><input type="button" class="btn btn-success default-button"	
-												 value="定時" /></td>
+								<td class="w60"><input type="button" class="btn btn-success default-button"	value="定時" /></td>
 								<td class="w90">
 									<select th:name="|attendanceList[${stat.index}].trainingStartTimeHour|"
 										class="form-control">
@@ -173,14 +172,16 @@
 			}
 		}
 		
-		const regularHour = {定時 :['09','00','18','00']};
+		//定時ボタンを押したときに設定される値
+		const defaultHour = {定時 :['9','0','18','0']};
 		
-		function regularHours(event){
-			const [startHour, startMinute, endHour, endMinute] = regularHour.定時;
+		function defaultHours(event){
+			const [startHour, startMinute, endHour, endMinute] = defaultHour.定時;
 			
 			//クリックされたボタンの行を取得
 			const row = event.target.closest('tr');
 			
+			//selectタグにtraining●●で終わるname属性があるか検索
 			const selectStartHour = row.querySelector('select[name$=".trainingStartTimeHour"]');
 			const selectStartMinute = row.querySelector('select[name$=".trainingStartTimeMinute"]');
 			const selectEndHour = row.querySelector('select[name$=".trainingEndTimeHour"]');
@@ -195,7 +196,7 @@
 			}
 			
 			document.querySelectorAll('.default-button').forEach(botton => {
-				botton.addEventListener('click',regularHours);});
+				botton.addEventListener('click',defaultHours);});
 	</script>
 
 </body>
