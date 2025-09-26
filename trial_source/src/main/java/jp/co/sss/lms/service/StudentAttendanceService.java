@@ -426,7 +426,7 @@ public class StudentAttendanceService {
 			
 			//中抜け時間が勤務時間を超える場合
 			if(dailyAttendanceForm.getBlankTime() != null && dailyAttendanceForm.getBlankTime() > 
-				(dailyAttendanceForm.getTrainingStartTimeHour() - dailyAttendanceForm.getTrainingStartTimeHour())) {
+				(dailyAttendanceForm.getTrainingEndTimeHour() - dailyAttendanceForm.getTrainingStartTimeHour())* 60 ) {
 				result.addError(new ObjectError("attendanceForm", messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_BLANKTIMEERROR))); 
 			}
 
