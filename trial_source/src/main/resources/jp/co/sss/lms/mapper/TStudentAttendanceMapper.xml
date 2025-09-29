@@ -12,7 +12,7 @@
 		ORDER BY training_date ASC
 	</select>
 
-	<!-- Task25 未入力件数カウント -->
+	<!-- 大塚あかり Task25 未入力件数カウント -->
 	<select id="findNotEnterCount" resultType="int">
 		SELECT COUNT (*)
 		FROM t_student_attendance
@@ -25,7 +25,7 @@
 		OR training_end_time IS NULL)
 	</select>
 
-	<!-- Task25 削除フラグ -->
+	<!-- 大塚あかり Task25 削除フラグ -->
 	<select id="selectById"
 		resultType="jp.co.sss.lms.entity.TStudentAttendance">
 		SELECT COUNT (*)
@@ -60,8 +60,7 @@
 		INNER JOIN m_section t2 ON t1.course_id = t2.course_id
 		LEFT OUTER JOIN t_student_attendance t3 ON t3.lms_user_id = #{lmsUserId}
 		AND cast(t2.date AS DATE) = cast(t3.training_date AS DATE)
-		WHERE
-		t1.course_id = #{courseId}
+		WHERE t1.course_id = #{courseId}
 		AND t1.delete_flg = #{deleteFlg}
 		ORDER BY t2.date ASC
 	</select>
@@ -70,8 +69,7 @@
 		parameterType="jp.co.sss.lms.entity.TStudentAttendance"
 		useGeneratedKeys="true" keyProperty="studentAttendanceId">
 		INSERT INTO t_student_attendance
-		(
-		lms_user_id,
+		( lms_user_id,
 		training_date,
 		training_start_time,
 		training_end_time,
@@ -83,8 +81,8 @@
 		first_create_date,
 		last_modified_user,
 		last_modified_date,
-		blank_time
-		) VALUES (
+		blank_time )
+		 VALUES (
 		#{lmsUserId},
 		#{trainingDate},
 		#{trainingStartTime},

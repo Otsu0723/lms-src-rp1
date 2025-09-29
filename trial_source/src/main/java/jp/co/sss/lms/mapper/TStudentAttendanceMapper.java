@@ -40,6 +40,7 @@ public interface TStudentAttendanceMapper {
 	 * @param deleteFlg
 	 * @return
 	 */
+	// 大塚あかり Task25
 	Integer findNotEnterCount(@Param("lmsUserId")Integer lmsUserId, 
 			@Param("trainingDate")Date trainingDate,@Param("trainingStartTime") String trainingStartTime,
 			@Param("trainingEndTime")String trainingEndTime,@Param("status")Short status,

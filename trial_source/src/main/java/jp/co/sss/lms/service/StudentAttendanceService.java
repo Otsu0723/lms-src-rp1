@@ -54,6 +54,9 @@ public class StudentAttendanceService {
 	 * 
 	 * @param courseId
 	 * @param lmsUserId
+	 * @param model
+	 * @param trainingStartTime
+	 * @param trainingEndTime
 	 * @return 勤怠管理画面用DTOリスト
 	 */
 	public List<AttendanceManagementDto> getAttendanceManagement(Integer courseId,
@@ -75,9 +78,6 @@ public class StudentAttendanceService {
 			if (statusEnum != null) {
 				dto.setStatusDispName(statusEnum.name);
 			}
-
-			//LMSユーザID・削除フラグ・現在日付を取得
-			TStudentAttendance i = tStudentAttendanceMapper.selectById(lmsUserId);
 		}
 		return attendanceManagementDtoList;
 	}
@@ -341,20 +341,22 @@ public class StudentAttendanceService {
 	* @author otsuka -Task.27
 	* 
 	* @param validKeyInputInvalid
-	 * @throws ParseException 
+	* @param attendanceForm
+	* @param result
+	* @param courseId
+	* @param lmsUserId
+	* @param deleteFlg
+	* @throws ParseException
 	*/
 	public void registCheck(String validKeyInputInvalid, AttendanceForm attendanceForm,
 			BindingResult result, @Param("courseId") Integer courseId,
 			@Param("lmsUserId") Integer lmsUserId, @Param("deleteFlg") Short deleteFlg) throws ParseException {
-
-		// 当日日付
-		Date date = new Date();
+		
+		// 大塚あかり - Task27
 		// 本日の研修日
 		Date trainingDate = attendanceUtil.getTrainingDate();
 		// 現在の研修時刻
 		TrainingTime trainingStartTime = new TrainingTime();
-		// 遅刻早退ステータス
-		AttendanceStatusEnum attendanceStatusEnum = attendanceUtil.getStatus(trainingStartTime, null);
 		
 		// 研修日チェック
 		if (!attendanceUtil.isWorkDay(loginUserDto.getCourseId(), trainingDate)) {
@@ -378,10 +380,6 @@ public class StudentAttendanceService {
 				continue;
 			}
 			
-			// 勤怠管理リストの取得
-			List<AttendanceManagementDto> attendanceManagementDtoList = tStudentAttendanceMapper
-					.getAttendanceManagement(courseId, lmsUserId, Constants.DB_FLG_FALSE);
-
 			// Task27 入力チェック
 			//備考の文字数が100以上の場合
 			if (dailyAttendanceForm.getNote() != null && dailyAttendanceForm.getNote().length() > 100) {
@@ -400,12 +398,8 @@ public class StudentAttendanceService {
 				result.addError(new ObjectError("attendanceForm", messageUtil.getMessage(Constants.VALID_KEY_INPUT_INVALID, new String[] { "退勤時間" }))); 
 			}
 			
-//			// 遅刻早退ステータス
-//			AttendanceStatusEnum attendanceStatusEnum = attendanceUtil.getStatus(trainingStartTime, trainingEndTime);
-
 			// 時・分の分割をHH:mm形式に整形
 			// 出勤時刻整形
-//			TrainingTime trainingStartTime = new TrainingTime();
 			trainingStartTime.setHour(dailyAttendanceForm.getTrainingStartTimeHour());
 			trainingStartTime.setMinute(dailyAttendanceForm.getTrainingStartTimeMinute());
 			// 退勤時刻整形
@@ -435,21 +429,24 @@ public class StudentAttendanceService {
 			tStudentAttendance.setTrainingStartTime(trainingStartTime.toString());
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.toString());
 		}
-//		return null;
 	}
 
 	/**
 	 * 勤怠登録・更新処理
 	 * 
 	 * @param attendanceForm
+	 * @param courseId
+	 * @param lmsUserId
+	 * @param attendanceManagementDto
 	 * @return 完了メッセージ
 	 * @throws ParseException
 	 */
 	@Transactional
 	public String update(AttendanceForm attendanceForm, Integer courseId, Integer lmsUserId,
 			AttendanceManagementDto attendanceManagementDto) throws ParseException {
-
-		//権限判定？
+		
+		//大塚あかり - Task27
+		//権限判定
 		lmsUserId = loginUserUtil.isStudent() ? loginUserDto.getLmsUserId()
 				: attendanceForm.getLmsUserId();
 

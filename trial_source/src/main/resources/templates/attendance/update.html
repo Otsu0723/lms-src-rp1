@@ -18,14 +18,14 @@
 			<h2><small>途中退校日：${dispLeaveDate}</small></h2>
 		</th:block>
 	</th:block>
-
+	
+	<!-- 大塚あかり Task27 -->
 	<!-- 更新エラーメッセージ -->
 	<form th:action="@{/attendance/update}" th:object="${attendanceForm}" method="post">
 		<th:block th:if="${#fields.hasErrors()}">
 			<ul style="padding-left: 0; list-style: none;">
 				<li th:each="errors : ${#fields.globalErrors()}">
-					<span th:text="${errors}" class="help-inline check">
-					</span>
+					<span th:text="${errors}" class="help-inline check"></span>
 				</li>
 			</ul>
 		</th:block>
@@ -160,7 +160,8 @@
 			}, 700);
 			return false;
 		});
-
+		
+		// 大塚あかり Task27 
 		function registCheck() {
 			if (confirm("更新します。よろしいですか？")) {
 				return true;
@@ -169,7 +170,8 @@
 				return false;
 			}
 		}
-
+		
+		// 大塚あかり Task28
 		//定時ボタンを押したときに設定される値
 		const defaultHour = {定時: ['9', '0', '18', '0']};
 

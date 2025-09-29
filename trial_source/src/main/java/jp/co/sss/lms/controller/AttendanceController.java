@@ -187,9 +187,10 @@ public class AttendanceController {
 			Integer courseId, Integer lmsUserId, Short validKeyInputInvalid, AttendanceManagementDto attendanceManagementDto) 
 					throws ParseException {
 		
+		// 大塚あかり - Task27
 		TStudentAttendance tStudentAttendance = new TStudentAttendance();
 
-		//Task27 更新前チェック
+		// Task27 更新前チェック
 		studentAttendanceService.registCheck(Constants.VALID_KEY_INPUT_INVALID, attendanceForm, result, lmsUserId, courseId, validKeyInputInvalid);
 
 		if (result.hasErrors()) {
