@@ -46,7 +46,7 @@
 		<div class="bs-component col-sm-12">
 
 			<form th:action="@{/attendance/update}" method="post" onsubmit="return registCheck()">
-				<table class="table table-hover dataTable no-footer">
+				<table class="table table-hover dataTable no-footer scrollTable">
 					<thead>
 						<tr class="thead-table-data">
 							<th class="w200">日付</th>
@@ -59,7 +59,7 @@
 							<th class="w200">備考</th>
 						</tr>
 					</thead>
-					<tbody  class="tbody-table-data">
+					<tbody  class="tbody-table-data scroll">
 						<th:block th:each="dailyAttendanceForm, stat : *{attendanceForm.attendanceList}">
 							<tr>
 								<th:block>
